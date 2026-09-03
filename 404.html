@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Pou Not Found</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4e8c1; /* Soft warm background */
+      color: #333;
+      padding: 50px 20px;
+      margin: 0;
+    }
+
+    /* Combined Float + Pulse Animation */
+    .animated-pou {
+      max-width: 280px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+      /* Calls the combined float-pulse keyframes */
+      animation: floatPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes floatPulse {
+      0% {
+        transform: translateY(0px) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-16px) scale(1.08); /* Moves UP & GROWS */
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(0px) scale(1); /* Returns down & normal size */
+        opacity: 1;
+      }
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      color: #5c3a21;
+    }
+
+    p {
+      font-size: 18px;
+      color: #666;
+    }
+
+    .btn-home {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 26px;
+      background-color: #8b5a2b;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .btn-home:hover {
+      background-color: #6a4420;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Using your error.png image -->
+  <img src="./error.png" alt="Pou 404 Error" class="animated-pou">
+
+  <h1>Pou not found</h1>
+  <p>The page you are looking for doesn't exist or went away.</p>
+
+  <a href="./" class="btn-home">Return to Home</a>
+
+</body
+  >
+</html>
