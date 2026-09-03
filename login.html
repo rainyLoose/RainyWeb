@@ -107,6 +107,36 @@
     </div>
   </div>
 
-<
-/body>
+  <script>
+    const loginForm = document.getElementById('login-form');
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const usernameInput = document.getElementById('username').value;
+      const passwordInput = document.getElementById('password').value;
+
+      // Fetch saved account from localStorage
+      const savedUser = localStorage.getItem('pouUser_' + usernameInput);
+
+      if (!savedUser) {
+        alert('User not found! Check your username or sign up.');
+        return;
+      }
+
+      const userData = JSON.parse(savedUser);
+
+      // Verify password
+      if (userData.password === passwordInput) {
+        // Save current logged-in session state
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        alert('Welcome back, ' + userData.username + '!');
+        window.location.href = './index.html';
+      } else {
+        alert('Incorrect password!');
+      }
+    });
+  </script>
+
+</body>
 </html>
