@@ -118,7 +118,41 @@
       <a href="./index.html">← Back to Home</a>
     </div>
   </div>
+<script>
+  const signupForm = document.getElementById('signup-form');
 
+  signupForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('new-username').value.trim();
+    const email = document.getElementById('new-email').value.trim().toLowerCase();
+    const password = document.getElementById('new-password').value;
+
+    // Check if username already exists
+    if (localStorage.getItem('pouUser_' + username)) {
+      alert('Username already taken!');
+      return;
+    }
+
+    // Generate a random 6-digit recovery code
+    const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const userData = {
+      username: username,
+      email: email,
+      password: password,
+      recoveryCode: recoveryCode
+    };
+
+    // Save account by username AND link email index
+    localStorage.setItem('pouUser_' + username, JSON.stringify(userData));
+    localStorage.setItem('pouEmail_' + email, username);
+
+    alert(`Account created!\n\nIMPORTANT: Your security recovery code is: ${recoveryCode}\nSave this code to reset your password if you forget it!`);
+    window.location.href = './login';
+  });
+  
+</script>
   <script>
     const signupForm = document.getElementById('signup-form');
 
