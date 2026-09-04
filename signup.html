@@ -71,84 +71,126 @@
       margin-top: 10px;
     }
 
-    button:hover {
-      background-color: #6a4420;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RainyWeb - Sign Up</title>
+  
+  <script>
+    if (window.location.pathname.endsWith('.html')) {
+      const cleanUrl = window.location.pathname.replace(/\.html$/, '');
+      window.history.replaceState(null, '', cleanUrl + window.location.search);
     }
+  </script>
 
-    .toggle-text {
-      margin-top: 15px;
-      font-size: 13px;
-      color: #777;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4e8c1;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 50px;
     }
-
-    .toggle-text a {
-      color: #8b5a2b;
-      text-decoration: none;
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #8b5a2b;
+      color: white;
+      border: none;
+      border-radius: 6px;
       font-weight: bold;
+      cursor: pointer;
+    }
+    a {
+      color: #5c3a21;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-block;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2>Create Pou Account</h2>
-    
+    <h2>Create Account</h2>
     <form id="signup-form">
-      <div class="form-group">
-        <label for="new-username">Username</label>
-        <input type="text" id="new-username" placeholder="Choose a username" required>
-      </div>
-
-      <div class="form-group">
-        <label for="new-email">Email</label>
-        <input type="email" id="new-email" placeholder="Enter your email" required>
-      </div>
-
-      <div class="form-group">
-        <label for="new-password">Password</label>
-        <input type="password" id="new-password" placeholder="Create a password" required>
-      </div>
-
-      <button type="submit">Sign Up</button>
+      <input type="text" id="new-username" placeholder="Username" required />
+      <input type="email" id="new-email" placeholder="Email Address" required />
+      <input type="password" id="new-password" placeholder="Password" required />
+      <button type="submit" class="btn">Sign Up</button>
     </form>
-
-    <div class="toggle-text">
-      Already have an account? <a href="./login.html">Log In</a>
-      <br><br>
-      <a href="./index.html">← Back to Home</a>
-    </div>
+    <a href="./login.html">Already have an account? Log In</a>
   </div>
-<script>
-  const signupForm = document.getElementById('signup-form');
 
-  signupForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  <script>
+    const signupForm = document.getElementById('signup-form');
 
-    const username = document.getElementById('new-username').value.trim();
-    const email = document.getElementById('new-email').value.trim().toLowerCase();
-    const password = document.getElementById('new-password').value;
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-    // Check if username already exists
-    if (localStorage.getItem('pouUser_' + username)) {
-      alert('Username already taken!');
-      return;
-    }
+      const username = document.getElementById('new-username').value.trim();
+      const email = document.getElementById('new-email').value.trim().toLowerCase();
+      const password = document.getElementById('new-password').value;
 
-    // Generate a random 6-digit recovery code
-    const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+      // Check if username is taken
+      if (localStorage.getItem('pouUser_' + username)) {
+        alert('Username already taken!');
+        return;
+      }
 
-    const userData = {
-      username: username,
-      email: email,
-      password: password,
-      recoveryCode: recoveryCode
-    };
+      // Check if email is taken
+      if (localStorage.getItem('pouEmail_' + email)) {
+        alert('An account with this email already exists!');
+        return;
+      }
 
-    // Save account by username AND link email index
-    localStorage.setItem('pouUser_' + username, JSON.stringify(userData));
-    localStorage.setItem('pouEmail_' + email, username);
+      // Generate a random 6-digit recovery code
+      const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    alert(`Account created!\n\nIMPORTANT: Your security recovery code is: ${recoveryCode}\nSave this code to reset your password if you forget it!`);
+      const userData = {
+        username: username,
+        email: email,
+        password: password,
+        recoveryCode: recoveryCode
+      };
+
+      // Save user account & link unique email
+      localStorage.setItem('pouUser_' + username, JSON.stringify(userData));
+      localStorage.setItem('pouEmail_' + email, username);
+
+      alert(`Account created!\n\nIMPORTANT: Your security recovery code is: ${recoveryCode}\nSave this code to reset your password if you forget it!`);
+      window.location.href = './login.html';
+    });
+  </script>
+
+</body>
+</html>
+
+RTANT: Your security recovery code is: ${recoveryCode}\nSave this code to reset your password if you forget it!`);
     window.location.href = './login';
   });
   
