@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RainyWeb - Settings</title>
+  
+  <script>
+    if (window.location.pathname.endsWith('.html')) {
+      const cleanUrl = window.location.pathname.replace(/\.html$/, '');
+      window.history.replaceState(null, '', cleanUrl + window.location.search);
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4e8c1;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #8b5a2b;
+      color: white;
+      width: 100%;
+      padding: 15px 0;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-container img {
+      height: 50px;
+      width: auto;
+    }
+    .container {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #8b5a2b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    a {
+      color: #5c3a21;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-block;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <!-- Only logo, no extra text -->
+      <img src="./RainyWebLogo.png" alt="RainyWeb Logo" />
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2 style="margin-top:0;">Account Settings</h2>
+      
+      <p><strong>Current Email:</strong> <span id="email-display">Loading...</span></p>
+
+      <form id="change-email-form">
+        <label for="new-email-input" style="font-size: 14px; font-weight: bold; display: block; text-align: left;">New Email Address:</label>
+        <input type="email" id="new-email-input" placeholder="Enter new email" required />
+        <button type="submit" class="btn">Update Email</button>
+      </form>
+
+      <a href="./home.html">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (!currentUser) {
+      alert('You must be logged in to view settings!');
+      window.location.href = './login.html';
+    } else {
+      const fullUserData = JSON.parse(localStorage.getItem('pouUser_' + currentUser.username)) || currentUser;
+      document.getElementById('email-display').textContent = fullUserData.email || 'None set';
+    }
+
+    const changeEmailForm = document.getElementById('change-email-form');
+
+    changeEmailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newEmail = document.getElementById('new-email-input').value.trim().toLowerCase();
+      const fullUserData = JSON.parse(localStorage.getItem('pouUser_' + currentUser.username));
+      const oldEmail = fullUserData.email ? fullUserData.email.toLowerCase() : '';
+
+      if (newEmail === oldEmail) {
+        alert('This is already your current email address!');
+        return;
+      }
+
+      if (localStorage.getItem('pouEmail_' + newEmail)) {
+        alert('This email address is already in use by another account!');
+        return;
+      }
+
+      if (oldEmail) {
+        localStorage.removeItem('pouEmail_' + oldEmail);
+      }
+
+      fullUserData.email = newEmail;
+      currentUser.email = newEmail;
+
+      localStorage.setItem('pouUser_' + currentUser.username, JSON.stringify(fullUserData));
+      localStorage.setItem('pouEmail_' + newEmail, currentUser.username);
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+      alert('Email updated successfully!');
+      document.getElementById('email-display').textContent = newEmail;
+      document.getElementById('new-email-input').value = '';
+    });
+  </script>
+
+</body>
+</html>
