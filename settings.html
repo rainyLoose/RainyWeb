@@ -42,7 +42,7 @@
       width: auto;
     }
     .container {
-      margin-top: 40px;
+      margin-top: 30px;
       width: 90%;
       max-width: 400px;
     }
@@ -52,8 +52,19 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       margin-bottom: 20px;
+      text-align: center;
     }
-    input {
+    .pfp-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #8b5a2b;
+      margin: 10px auto;
+      display: block;
+      background-color: #eee;
+    }
+    input[type="email"], input[type="file"] {
       width: 100%;
       padding: 10px;
       margin: 8px 0 15px;
@@ -84,7 +95,6 @@
 
   <header>
     <div class="header-container">
-      <!-- Only logo, no extra text -->
       <img src="./RainyWebLogo.png" alt="RainyWeb Logo" />
     </div>
   </header>
@@ -93,6 +103,19 @@
     <div class="card">
       <h2 style="margin-top:0;">Account Settings</h2>
       
+      <!-- Profile Picture Section -->
+      <h3>Profile Picture</h3>
+      <img id="pfp-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23cccccc'/><circle cx='50' cy='40' r='20' fill='%23ffffff'/><path d='M 20 85 Q 50 50 80 85' stroke='%23ffffff' stroke-width='8' fill='none'/></svg>" class="pfp-preview" alt="PFP Preview" />
+      
+      <form id="pfp-form">
+        <label for="pfp-input" style="font-size: 14px; font-weight: bold;">Upload New PFP:</label>
+        <input type="file" id="pfp-input" accept="image/*" required />
+        <button type="submit" class="btn">Save Avatar</button>
+      </form>
+
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;" />
+
+      <!-- Email Section -->
       <p><strong>Current Email:</strong> <span id="email-display">Loading...</span></p>
 
       <form id="change-email-form">
@@ -111,18 +134,53 @@
     if (!currentUser) {
       alert('You must be logged in to view settings!');
       window.location.href = './login.html';
-    } else {
-      const fullUserData = JSON.parse(localStorage.getItem('pouUser_' + currentUser.username)) || currentUser;
-      document.getElementById('email-display').textContent = fullUserData.email || 'None set';
     }
 
-    const changeEmailForm = document.getElementById('change-email-form');
+    const fullUserData = JSON.parse(localStorage.getItem('pouUser_' + currentUser.username)) || currentUser;
+    document.getElementById('email-display').textContent = fullUserData.email || 'None set';
 
-    changeEmailForm.addEventListener('submit', (e) => {
+    // Display existing PFP if stored
+    if (fullUserData.pfp) {
+      document.getElementById('pfp-preview').src = fullUserData.pfp;
+    }
+
+    // 1. Handle PFP Upload
+    document.getElementById('pfp-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('pfp-input');
+      const file = fileInput.files[0];
+
+      if (!file) return;
+
+      // Restrict file size to keep localStorage clean (under 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image is too large! Please pick an image smaller than 2MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const base64Image = event.target.result;
+
+        // Save image string into user object
+        fullUserData.pfp = base64Image;
+        currentUser.pfp = base64Image;
+
+        localStorage.setItem('pouUser_' + currentUser.username, JSON.stringify(fullUserData));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+        document.getElementById('pfp-preview').src = base64Image;
+        alert('Profile picture updated successfully!');
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    // 2. Handle Change Email
+    document.getElementById('change-email-form').addEventListener('submit', (e) => {
       e.preventDefault();
 
       const newEmail = document.getElementById('new-email-input').value.trim().toLowerCase();
-      const fullUserData = JSON.parse(localStorage.getItem('pouUser_' + currentUser.username));
       const oldEmail = fullUserData.email ? fullUserData.email.toLowerCase() : '';
 
       if (newEmail === oldEmail) {
@@ -137,6 +195,25 @@
 
       if (oldEmail) {
         localStorage.removeItem('pouEmail_' + oldEmail);
+      }
+
+      fullUserData.email = newEmail;
+      currentUser.email = newEmail;
+
+      localStorage.setItem('pouUser_' + currentUser.username, JSON.stringify(fullUserData));
+      localStorage.setItem('pouEmail_' + newEmail, currentUser.username);
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+      alert('Email updated successfully!');
+      document.getElementById('email-display').textContent = newEmail;
+      document.getElementById('new-email-input').value = '';
+    });
+  </script>
+
+</body>
+</html>
+
+'pouEmail_' + oldEmail);
       }
 
       fullUserData.email = newEmail;
