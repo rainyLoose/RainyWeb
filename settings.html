@@ -129,6 +129,138 @@
   </div>
 
   <script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RainyWeb - Settings</title>
+  
+  <script>
+    if (window.location.pathname.endsWith('.html')) {
+      const cleanUrl = window.location.pathname.replace(/\.html$/, '');
+      window.history.replaceState(null, '', cleanUrl + window.location.search);
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4e8c1;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+    header {
+      background-color: #8b5a2b;
+      color: white;
+      width: 100%;
+      padding: 15px 0;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-container img {
+      height: 50px;
+      width: auto;
+    }
+    .container {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .pfp-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #8b5a2b;
+      margin: 10px auto;
+      display: block;
+      background-color: #eee;
+    }
+    input[type="email"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #8b5a2b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    a {
+      color: #5c3a21;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-block;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <img src="./RainyWebLogo.png" alt="RainyWeb Logo" />
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2 style="margin-top:0;">Account Settings</h2>
+      
+      <!-- PFP Upload -->
+      <h3>Profile Picture</h3>
+      <img id="pfp-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23cccccc'/><circle cx='50' cy='40' r='20' fill='%23ffffff'/><path d='M 20 85 Q 50 50 80 85' stroke='%23ffffff' stroke-width='8' fill='none'/></svg>" class="pfp-preview" alt="PFP Preview" />
+      
+      <form id="pfp-form">
+        <label for="pfp-input" style="font-size: 14px; font-weight: bold;">Upload New PFP:</label>
+        <input type="file" id="pfp-input" accept="image/*" required />
+        <button type="submit" class="btn">Save Avatar</button>
+      </form>
+
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;" />
+
+      <!-- Email Update -->
+      <p><strong>Current Email:</strong> <span id="email-display">Loading...</span></p>
+
+      <form id="change-email-form">
+        <label for="new-email-input" style="font-size: 14px; font-weight: bold; display: block; text-align: left;">New Email Address:</label>
+        <input type="email" id="new-email-input" placeholder="Enter new email" required />
+        <button type="submit" class="btn">Update Email</button>
+      </form>
+
+      <a href="./home.html">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
     if (!currentUser) {
@@ -139,12 +271,11 @@
     const fullUserData = JSON.parse(localStorage.getItem('pouUser_' + currentUser.username)) || currentUser;
     document.getElementById('email-display').textContent = fullUserData.email || 'None set';
 
-    // Display existing PFP if stored
     if (fullUserData.pfp) {
       document.getElementById('pfp-preview').src = fullUserData.pfp;
     }
 
-    // 1. Handle PFP Upload
+    // PFP Upload
     document.getElementById('pfp-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const fileInput = document.getElementById('pfp-input');
@@ -152,9 +283,8 @@
 
       if (!file) return;
 
-      // Restrict file size to keep localStorage clean (under 2MB)
       if (file.size > 2 * 1024 * 1024) {
-        alert('Image is too large! Please pick an image smaller than 2MB.');
+        alert('Image is too large! Pick an image under 2MB.');
         return;
       }
 
@@ -162,7 +292,6 @@
       reader.onload = function(event) {
         const base64Image = event.target.result;
 
-        // Save image string into user object
         fullUserData.pfp = base64Image;
         currentUser.pfp = base64Image;
 
@@ -176,7 +305,7 @@
       reader.readAsDataURL(file);
     });
 
-    // 2. Handle Change Email
+    // Email Update
     document.getElementById('change-email-form').addEventListener('submit', (e) => {
       e.preventDefault();
 
@@ -195,6 +324,25 @@
 
       if (oldEmail) {
         localStorage.removeItem('pouEmail_' + oldEmail);
+      }
+
+      fullUserData.email = newEmail;
+      currentUser.email = newEmail;
+
+      localStorage.setItem('pouUser_' + currentUser.username, JSON.stringify(fullUserData));
+      localStorage.setItem('pouEmail_' + newEmail, currentUser.username);
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+      alert('Email updated successfully!');
+      document.getElementById('email-display').textContent = newEmail;
+      document.getElementById('new-email-input').value = '';
+    });
+  </script>
+
+</body>
+</html>
+
+' + oldEmail);
       }
 
       fullUserData.email = newEmail;
